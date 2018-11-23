@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/estilo.css">
+    <title>(Ejemplo Ajax)</title>
+    <script>
+        var request;
+        
+        function ejecutarLlamadaAjax(plataforma){
+            request = new XMLHttpRequest();
+            request.onreadystatechange=function(){
+                if(request.readyState==4 && request.status==200){
+                    var juegos = JSON.parse(request.responseText);
+                    generarHTML(juegos, plataforma);
+                }
+            }
+            request.overrideMimeType("text/plain");
+            request.open("GET","https://fpaniaguaj232018.github.io/juegos.json");
+            request.send(null);
+        }
+        function generarHTML(juegos, plataforma){
+            //SUPONEMOS QUE HEMOS ELIGOD PS4
+            var vjs = juegos.videojuegos;
+            var total = 0;
+            for (let i=0;i<vjs.length;i++){
+                if (vjs[i].plataforma==plataforma){
+                    total = total + parseFloat(vjs[i].precio);
+                }
+            }
+            total = total.toFixed(2);
+            console.log("TOTAL VENDIDO " + plataforma + ":" + total);
+        }
+    </script>
+</head>
+<body>
+    <H1>PROYECTO BASE</H1>
+    <input type="button" value="PS4" onclick="ejecutarLlamadaAjax('PS4')">
+    <input type="button" value="XBOX ONE" onclick="ejecutarLlamadaAjax('XBOX ONE')">
+</body>
+</html>
