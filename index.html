@@ -9,35 +9,110 @@
     <script>
         var request;
         
-        function ejecutarLlamadaAjax(plataforma){
+        function ejecutarLlamadaAjax(tipo){
             request = new XMLHttpRequest();
             request.onreadystatechange=function(){
                 if(request.readyState==4 && request.status==200){
                     var juegos = JSON.parse(request.responseText);
-                    generarHTML(juegos, plataforma);
+                    switch(tipo){
+                        case 1:
+                            calcularTotalFifa(juegos);
+                            break;
+                        case 2:
+                            calcularPromediosJavier(juegos);
+                            break;
+                        case 3:
+                            calcularPromedios(juegos);
+                            break;
+                        case 4:
+                            calcularPromediosFifaFernando(juegos);
+                            break;
+                    }
                 }
             }
             request.overrideMimeType("text/plain");
-            request.open("GET","https://fpaniaguaj232018.github.io/juegos.json");
+            request.open("GET","https://fpaniaguaj232018.github.io/juegos_deluxe.json");
             request.send(null);
         }
-        function generarHTML(juegos, plataforma){
-            //SUPONEMOS QUE HEMOS ELIGOD PS4
+        function calcularTotalFifa(juegos){
+            var total=0;
             var vjs = juegos.videojuegos;
-            var total = 0;
-            for (let i=0;i<vjs.length;i++){
-                if (vjs[i].plataforma==plataforma){
-                    total = total + parseFloat(vjs[i].precio);
+            for(let i=0;i<vjs.length;i++){
+                if (vjs[i].titulo.startsWith("FIFA")){
+                    total+=parseFloat(vjs[i].precio);
                 }
             }
-            total = total.toFixed(2);
-            console.log("TOTAL VENDIDO " + plataforma + ":" + total);
+            console.log("TOTAL FIFA:" + total);
         }
+        function calcularPromediosJavier(juegos){
+            var total=0;
+            var vjs = juegos.videojuegos;
+            for(let i=0;i<vjs.length;i++){
+                var rating = vjs[i].rating;
+                for(let j=0;j<rating.length;j++){
+                    if (rating[j].Nombre=="Javier Prieto"){
+                        total+=parseInt(rating[j].Valor);
+                    }
+                }
+            }
+            var promedio = total / vjs.length;
+            console.log("PROMEDIO J. PRIETO:" + promedio);
+        }
+        function calcularPromedios(juegos){
+            var total=0;
+            var vjs = juegos.videojuegos;
+            for(let i=0;i<vjs.length;i++){
+                var rating = vjs[i].rating;
+                for(let j=0;j<rating.length;j++){
+                    total+=parseInt(rating[j].Valor);
+                }
+            }
+            var promedio = total / (vjs.length * 2);
+            console.log("PROMEDIO:" + promedio);
+        }
+        function calcularPromediosFifaFernando(juegos){
+            var numeroVeces = 0;
+            var total=0;
+            var vjs = juegos.videojuegos;
+            for(let i=0;i<vjs.length;i++){
+                if (vjs[i].titulo.startsWith("FIFA")){
+                    var rating = vjs[i].rating;
+                    for(let j=0;j<rating.length;j++){
+                        if (rating[j].Nombre=="Fernando Paniagua"){
+                            total+=parseInt(rating[j].Valor);
+                            numeroVeces++;
+                        }
+                    }
+                }
+            }
+            var promedio = total / numeroVeces;
+            console.log("PROMEDIO F. PANIAGUA:" + promedio);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     </script>
 </head>
 <body>
     <H1>PROYECTO BASE</H1>
-    <input type="button" value="PS4" onclick="ejecutarLlamadaAjax('PS4')">
-    <input type="button" value="XBOX ONE" onclick="ejecutarLlamadaAjax('XBOX ONE')">
+    <input type="button" value="TOTAL FIFA" onclick="ejecutarLlamadaAjax(1)">
+    <input type="button" value="PROMEDIO J. PRIETO" onclick="ejecutarLlamadaAjax(2)">
+    <input type="button" value="PROMEDIO JUEGOS" onclick="ejecutarLlamadaAjax(3)">
+    <input type="button" value="PROMEDIO F. PANIAGUA" onclick="ejecutarLlamadaAjax(4)">
 </body>
 </html>
